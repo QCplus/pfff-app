@@ -1,0 +1,56 @@
+{
+    "python.analysis.diagnosticSeverityOverrides": {
+
+    },
+    "python.analysis.packageIndexDepths": [
+
+        {
+            "name": "sklearn",
+            "depth": 2
+        },
+        {
+            "name": "matplotlib",
+            "depth": 2
+        },
+        {
+            "name": "scipy",
+            "depth": 2
+        },
+        {
+            "name": "django",
+            "depth": 2
+        }
+    ],
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./src",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.unittestEnabled": true,
+    "python.terminal.activateEnvironment": true,
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#e89e31",
+        "activityBar.background": "#e89e31",
+        "activityBar.foreground": "#15202b",
+        "activityBar.inactiveForeground": "#15202b99",
+        "activityBarBadge.background": "#e2fcf1",
+        "activityBarBadge.foreground": "#15202b",
+        "commandCenter.border": "#15202b99",
+        "sash.hoverBorder": "#e89e31",
+        "statusBar.background": "#cf8517",
+        "statusBar.foreground": "#15202b",
+        "statusBarItem.hoverBackground": "#a16712",
+        "statusBarItem.remoteBackground": "#cf8517",
+        "statusBarItem.remoteForeground": "#15202b",
+        "titleBar.activeBackground": "#cf8517",
+        "titleBar.activeForeground": "#15202b",
+        "titleBar.inactiveBackground": "#cf851799",
+        "titleBar.inactiveForeground": "#15202b99"
+    },
+    "peacock.color": "#cf8517"
+}

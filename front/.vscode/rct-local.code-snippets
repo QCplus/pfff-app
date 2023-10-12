@@ -1,0 +1,19 @@
+{
+    "Create API request": {
+        "prefix": "req",
+        "scope": "typescript",
+        "body": [
+            "import ApiRequestBase, { ContentType } from '../ApiRequestBase';",
+            "",
+            "export default class $TM_FILENAME_BASE extends ApiRequestBase<$1, unknown, $2> {",
+            "\tconstructor() {",
+            "\t\tsuper('$3', ContentType.Json, 'json');",
+            "\t}",
+            "",
+            "\tpublic getPath($4: $2): string {",
+            "\t\treturn '$5';",
+            "\t}",
+            "}"
+        ]
+    }
+}
