@@ -1,12 +1,13 @@
+from typing import List, Optional
 from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
-from src.db.orm_db import get_session
-from src.deps import get_repos_factory, oauth2_scheme
-from src.models.Purchase import Purchase
+from src.deps import oauth2_scheme
+from src.db.dto.NewPurchaseDto import NewPurchaseDto
+from src.models.api.PurchaseModel import PurchaseModel
 from src.models.api.PurchasePost import PurchasePost
+from src.repositories.abstract.IPurchasesRepository import IPurchasesRepository
 from src.services.PluginLoader import PluginLoader
-from src.services.RepositoriesFactory import RepositoriesFactory
+from src.repositories.app_deps import get_purchases_repo
 
 
 plugin_loader = PluginLoader('./plugins')
@@ -18,35 +19,51 @@ router = APIRouter(
 
 
 @router.post('/')
-def add_purchase(item: PurchasePost,
-                 factory: RepositoriesFactory = Depends(get_repos_factory),
-                 session: Session = Depends(get_session),
-                 token: str = Depends(oauth2_scheme)
-                 ):
-    factory.get_purchases_repository(session).add(item.to_db_model())
+def add(item: PurchasePost,
+        repo: IPurchasesRepository = Depends(get_purchases_repo),
+        token: str = Depends(oauth2_scheme)
+        ) -> int:
+    return repo.add(item.to_db_model())
 
 
 @router.post('/qrcode/{code}')
 def add_from_qr_code(code: str,
-                     factory: RepositoriesFactory = Depends(get_repos_factory),
-                     session: Session = Depends(get_session),
+                     repo: IPurchasesRepository = Depends(get_purchases_repo),
                      token: str = Depends(oauth2_scheme)
                      ):
     data = qr_code_processor.process_qr_code(code=code)
 
-    factory.get_purchases_repository(session).add_list([
-        Purchase(price=t['price'],
-                 name=t['name'],
-                 quantity=t['quantity'],
-                 payment_time=t['payment_time'],
-                 shop=t['shop'],
-                 category=t['category'])
+    repo.add_list([
+        NewPurchaseDto(
+            price=t['price'],
+            name=t['name'],
+            quantity=t['quantity'],
+            payment_time=t['payment_time'],
+            shop=t['shop'],
+            category=t['category'])
         for t in data])
 
 
+@router.get('/{id}')
+def get_by_id(id: int,
+              repo: IPurchasesRepository = Depends(get_purchases_repo),
+              token: str = Depends(oauth2_scheme)
+              ) -> Optional[PurchaseModel]:
+    return PurchaseModel.from_db(
+        repo.get_by_id(id)
+    )
+
+
+@router.put('/')
+def update(purchase: PurchaseModel,
+           repo: IPurchasesRepository = Depends(get_purchases_repo),
+           token: str = Depends(oauth2_scheme)
+           ) -> None:
+    repo.update(purchase.to_dto())
+
+
 @router.get('/tags')
-def get_all_tags(factory: RepositoriesFactory = Depends(get_repos_factory),
-                 session: Session = Depends(get_session),
+def get_all_tags(repo: IPurchasesRepository = Depends(get_purchases_repo),
                  token: str = Depends(oauth2_scheme)
-                 ):
-    return factory.get_purchases_repository(session).get_all_tags()
+                 ) -> List[str]:
+    return repo.get_all_tags()

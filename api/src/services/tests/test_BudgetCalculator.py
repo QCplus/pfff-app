@@ -1,11 +1,10 @@
 from unittest import TestCase
 from datetime import datetime
-from src.models.api.BalanceModel import BalanceModel
 
+from src.models.api.BalanceModel import BalanceModel
 from src.services.BudgetCalculator import BudgetCalculator
 from src.models.Purchase import Purchase
 from src.models.Payment import Payment
-from src.tests_helpers.helpers import create_purchase
 
 
 class TestBudgetCalculator(TestCase):
@@ -13,20 +12,21 @@ class TestBudgetCalculator(TestCase):
     def setUpClass(cls) -> None:
         cls.calculator = BudgetCalculator()
 
+    @staticmethod
+    def create_purchase(id: int, price: float, quantity: float = 1, payment_time: datetime = datetime.now(), name: str = 'ITEM') -> Purchase:
+        return Purchase(id=id,
+                        price=price,
+                        name=name,
+                        quantity=quantity,
+                        payment_time=payment_time,
+                        shop='SHOP',
+                        category=None
+                        )
+
     def test_calc_balance(self):
         purchases = [
-            Purchase(quantity=1,
-                     category='',
-                     payment_time=datetime.now(),
-                     price=1000,
-                     name='TEST',
-                     shop='SHOP'),
-            Purchase(quantity=1,
-                     category='',
-                     payment_time=datetime.now(),
-                     price=2000,
-                     name='TEST',
-                     shop='SHOP'),
+            self.create_purchase(id=1, price=1000, quantity=1),
+            self.create_purchase(id=2, price=2000, quantity=1),
         ]
 
         payments = [
@@ -41,18 +41,8 @@ class TestBudgetCalculator(TestCase):
 
     def test_calc_balance_if_quantity_not_one(self):
         purchases = [
-            Purchase(quantity=1,
-                     category='',
-                     payment_time=datetime.now(),
-                     price=1000,
-                     name='TEST',
-                     shop='SHOP'),
-            Purchase(quantity=0.5,
-                     category='',
-                     payment_time=datetime.now(),
-                     price=2000,
-                     name='TEST',
-                     shop='SHOP'),
+            self.create_purchase(id=1, price=1000, quantity=1),
+            self.create_purchase(id=1, price=2000, quantity=0.5),
         ]
 
         payments = [
@@ -67,20 +57,22 @@ class TestBudgetCalculator(TestCase):
 
     def test_calc_balance_monthly(self):
         purchases = [
-            create_purchase(name='ITEM1',
-                            price=100,
-                            payment_time=datetime(2022, 10, 1)),
-            create_purchase(name='ITEM2',
-                            price=50,
-                            payment_time=datetime(2022, 10, 5)),
-            
-            create_purchase(name='ITEM1',
-                            price=100,
-                            payment_time=datetime(2022, 11, 4)),
-            
-            create_purchase(name='ITEM3',
-                            price=400,
-                            payment_time=datetime(2022, 12, 3))
+            self.create_purchase(id=1,
+                                 name='ITEM1',
+                                 price=100,
+                                 payment_time=datetime(2022, 10, 1)),
+            self.create_purchase(id=2,
+                                 name='ITEM2',
+                                 price=50,
+                                 payment_time=datetime(2022, 10, 5)),
+            self.create_purchase(id=3,
+                                 name='ITEM1',
+                                 price=100,
+                                 payment_time=datetime(2022, 11, 4)),
+            self.create_purchase(id=4,
+                                 name='ITEM3',
+                                 price=400,
+                                 payment_time=datetime(2022, 12, 3))
         ]
 
         payments = [
