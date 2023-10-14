@@ -31,7 +31,7 @@ export interface FullRequestParams extends Omit<RequestInit, "body"> {
 }
 
 export abstract class ApiRequestBase<T = any, E = any, P = any> {
-    public baseUrl: string = "http://localhost:8000";
+    public baseUrl: string;
     private baseApiParams: RequestParams = {
 
     };
@@ -41,6 +41,8 @@ export abstract class ApiRequestBase<T = any, E = any, P = any> {
     protected responseFormat: ResponseFormat;
 
     constructor(httpMethod: string, contentType: ContentType, responseFormat: ResponseFormat) {
+        this.baseUrl = process.env.REACT_APP_API_URL ?? "http://localhost:8000";
+
         this.httpMethod = httpMethod;
         this.contentType = contentType;
         this.responseFormat = responseFormat;

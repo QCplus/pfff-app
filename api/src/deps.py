@@ -1,3 +1,4 @@
+import os
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
@@ -13,7 +14,7 @@ def get_repos_factory():
     return RepositoriesFactory()
 
 
-settings = AppSettings('./appsettings.json')
+settings = AppSettings(os.path.join('.', 'data', 'appsettings.json'))
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 password_hasher = PasswordHasher()
 token_generator = TokenGenerator(settings.secret_key, settings.token_lifetime_mins)

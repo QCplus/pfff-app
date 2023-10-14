@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from src.services.TokenGenerator import TokenGenerator
 
@@ -21,6 +22,11 @@ class AppSettings:
         if os.path.exists(path_to_config):
             with open(path_to_config, 'r') as fin:
                 config: dict = json.loads(fin.read())
+        else:
+            os.makedirs(
+                path_to_config[:path_to_config.rfind(os.sep)],
+                exist_ok=True
+            )
     
         self.secret_key = config.get(self.FIELD_SECRET_KEY, TokenGenerator.generate_secret_key())
         self.host = config.get(self.FIELD_HOST, '192.168.0.1')
