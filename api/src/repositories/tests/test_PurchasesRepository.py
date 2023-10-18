@@ -15,7 +15,7 @@ class test_PurchasesRepository(RepositoryTestsBase):
                      price: float,
                      quantity: int = 1,
                      shop: Optional[str] = 'SHOP',
-                     category: str = '',
+                     category: Optional[str] = '',
                      payment_time: Optional[datetime] = None
                      ) -> NewPurchaseDto:
         if payment_time is None:
@@ -118,3 +118,15 @@ class test_PurchasesRepository(RepositoryTestsBase):
         actual = self.repository.get_by_id(id)
 
         self.assertEquals(expected, actual)
+
+    
+    def test_get_all_tags_no_empty_tags(self):
+        purchase = self.new_purchase('ITEM', 100, category='CATEGORY')
+        self.repository.add(purchase)
+        self.repository.add(self.new_purchase('ITEM', 100, category=''))
+        self.repository.add(self.new_purchase('ITEM', 100, category=None))
+
+        tags = self.repository.get_all_tags()
+
+        self.assertEquals(1, len(tags))
+        self.assertEquals(purchase.category, tags[0])

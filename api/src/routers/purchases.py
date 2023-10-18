@@ -44,16 +44,6 @@ def add_from_qr_code(code: str,
         for t in data])
 
 
-@router.get('/{id}')
-def get_by_id(id: int,
-              repo: IPurchasesRepository = Depends(get_purchases_repo),
-              token: str = Depends(oauth2_scheme)
-              ) -> Optional[PurchaseModel]:
-    return PurchaseModel.from_db(
-        repo.get_by_id(id)
-    )
-
-
 @router.put('/')
 def update(purchase: PurchaseModel,
            repo: IPurchasesRepository = Depends(get_purchases_repo),
@@ -66,4 +56,15 @@ def update(purchase: PurchaseModel,
 def get_all_tags(repo: IPurchasesRepository = Depends(get_purchases_repo),
                  token: str = Depends(oauth2_scheme)
                  ) -> List[str]:
-    return repo.get_all_tags()
+    tags = repo.get_all_tags()
+    return tags
+
+
+@router.get('/{id}')
+def get_by_id(id: int,
+              repo: IPurchasesRepository = Depends(get_purchases_repo),
+              token: str = Depends(oauth2_scheme)
+              ) -> Optional[PurchaseModel]:
+    return PurchaseModel.from_db(
+        repo.get_by_id(id)
+    )

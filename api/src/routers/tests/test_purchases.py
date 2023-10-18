@@ -1,5 +1,6 @@
 import random
 from datetime import datetime
+from typing import Optional
 
 from src.models.api.PurchaseModel import PurchaseModel
 from src.models.api.PurchasePost import PurchasePost
@@ -9,17 +10,17 @@ from src.tests_helpers.purchase import random_purchase_model
 
 
 class TestPurchases(RouterTestsBase):
-    def _random_purchase_post(self) -> PurchasePost:
+    def _random_purchase_post(self, category: Optional[str] = None) -> PurchasePost:
         return PurchasePost(price=random.randrange(1, 999),
                             name=random_str(12),
                             quantity=random.randrange(1, 10),
                             payment_time=datetime.now().isoformat(),
                             shop=f'SHOP {random_str(10)}',
-                            category=f'CATEGORY {random_str(4)}'
+                            category=f'CATEGORY {random_str(4)}' if category is None else category
                             )
     
-    def _add_purchase(self) -> PurchaseModel:
-        purchase = self._random_purchase_post()
+    def _add_purchase(self, category: Optional[str] = None) -> PurchaseModel:
+        purchase = self._random_purchase_post(category=category)
         result = self._client.post('/purchases', json=purchase.__dict__)
 
         result = self._client.get(f'/purchases/{result.content.decode()}')
@@ -71,3 +72,14 @@ class TestPurchases(RouterTestsBase):
         actual = result.json()
         self.assertIsNotNone(actual)
         self.assert_models(expected, actual)
+
+    
+    def test_get_all_tags_returns_not_empty_list(self):
+        purchase = self._add_purchase()
+
+        result = self._client.get('/purchases/tags')
+
+        self.assertEquals(200, result.status_code)
+        tags = result.json()
+        self.assertEquals(1, len(tags))
+        self.assertEquals(purchase.category, tags[0])

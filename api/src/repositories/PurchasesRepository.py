@@ -44,7 +44,14 @@ class PurchasesRepository(IPurchasesRepository):
         return Purchase.from_db(q.first())
 
     def get_all_tags(self) -> List[str]:
-        return [r.category for r in self.__db.query(PurchaseEntity).distinct().group_by(PurchaseEntity.category).all()]
+        return [r.category for r in 
+                self.__db
+                .query(PurchaseEntity)
+                .distinct()
+                .group_by(PurchaseEntity.category)
+                .where(PurchaseEntity.category != None)
+                .where(PurchaseEntity.category != '')
+                .all()]
     
     def update(self, entity: Purchase) -> None:
         q = self.__db \
