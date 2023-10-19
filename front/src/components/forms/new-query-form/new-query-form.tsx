@@ -1,11 +1,13 @@
 import React from "react";
+import { LoadingOutlined } from "@ant-design/icons";
 import { Button, Form, Input, } from "antd";
+import ReactCodeMirror from "@uiw/react-codemirror";
+import { sql } from '@codemirror/lang-sql';
 
 import CustomQuery from "../../../api/models/CustomQuery";
 import AddQueryRequest from "../../../api/requests/query/AddQueryRequest";
 import UpdateQueryRequest from "../../../api/requests/query/UpdateQueryRequest";
 import GetQueryRequest from "../../../api/requests/query/GetQueryRequest";
-import { LoadingOutlined } from "@ant-design/icons";
 
 const INITIAL_VALUES = { q: '', title: '' } as CustomQuery;
 
@@ -41,8 +43,6 @@ const NewQueryForm = (props: NewQueryFormProps) => {
         request
             .send(formData as CustomQuery)
             .then(r => {
-                form.resetFields();
-
                 props.onSuccessSubmit();
             });
     }
@@ -78,7 +78,12 @@ const NewQueryForm = (props: NewQueryFormProps) => {
                             name='q'
                             rules={[{ required: true }]}
                         >
-                            <Input.TextArea rows={4} placeholder='Write your code here' />
+                            <ReactCodeMirror
+                                height="200px"
+                                placeholder='Write your code here'
+                                extensions={[sql({ upperCaseKeywords: true })]}
+                            />
+                            {/* <Input.TextArea rows={4} placeholder='Write your code here' /> */}
                         </Form.Item>
 
                         <Form.Item>

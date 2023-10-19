@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.0.1",
+    "@codemirror/lang-sql": "^6.5.4",
     "@reduxjs/toolkit": "^1.9.6",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -12,6 +13,7 @@
     "@types/node": "^16.18.12",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@uiw/react-codemirror": "^4.21.20",
     "antd": "^5.2.2",
     "chart.js": "^4.2.1",
     "rc-table": "^7.31.0",
