@@ -38,10 +38,10 @@ class PurchasesRepository(IPurchasesRepository):
 
         return [Purchase.from_db(r) for r in q.all()]
 
-    def get_by_id(self, id: int) -> Purchase:
-        q = self.__db.query(PurchaseEntity).filter(PurchaseEntity.id == id)
+    def get_by_id(self, id: int) -> Optional[Purchase]:
+        result = self.__db.query(PurchaseEntity).filter(PurchaseEntity.id == id).first()
 
-        return Purchase.from_db(q.first())
+        return None if result is None else Purchase.from_db(result)
 
     def get_all_tags(self) -> List[str]:
         return [r.category for r in 

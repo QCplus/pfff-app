@@ -21,7 +21,7 @@ class TestPurchases(RouterTestsBase):
     
     def _add_purchase(self, category: Optional[str] = None) -> PurchaseModel:
         purchase = self._random_purchase_post(category=category)
-        result = self._client.post('/purchases', json=purchase.__dict__)
+        result = self._client.post('/purchases', json=purchase.as_dict())
 
         result = self._client.get(f'/purchases/{result.content.decode()}')
         
@@ -33,7 +33,7 @@ class TestPurchases(RouterTestsBase):
         self.assertEquals(expected.price, actual['price'])
         self.assertEquals(expected.name, actual['name'])
         self.assertEquals(expected.quantity, actual['quantity'])
-        self.assertEquals(expected.payment_time, actual['payment_time'])
+        self.assertEquals(expected.payment_time, actual['paymentTime'])
         self.assertEquals(expected.shop, actual['shop'])
         self.assertEquals(expected.category, actual['category'])        
         
@@ -45,7 +45,7 @@ class TestPurchases(RouterTestsBase):
                                 payment_time='2023-10-14T15:17:04',
                                 shop='SHOP1',
                                 category='CATEGORY1')
-        result = self._client.post('/purchases', json=expected.__dict__)
+        result = self._client.post('/purchases', json=expected.as_dict())
 
         self.assertEquals(200, result.status_code)
 
@@ -56,7 +56,7 @@ class TestPurchases(RouterTestsBase):
         self.assertEquals(expected.price, actual['price'])
         self.assertEquals(expected.name, actual['name'])
         self.assertEquals(expected.quantity, actual['quantity'])
-        self.assertEquals(expected.payment_time, actual['payment_time'])
+        self.assertEquals(expected.payment_time, actual['paymentTime'])
         self.assertEquals(expected.shop, actual['shop'])
         self.assertEquals(expected.category, actual['category'])
 
@@ -65,13 +65,22 @@ class TestPurchases(RouterTestsBase):
         expected = self._add_purchase()
         expected = random_purchase_model(expected.id)
 
-        result = self._client.put('/purchases', json=expected.__dict__)
+        result = self._client.put('/purchases', json=expected.as_dict())
         self.assertEquals(200, result.status_code)
         result = self._client.get(f'/purchases/{expected.id}')
 
         actual = result.json()
         self.assertIsNotNone(actual)
         self.assert_models(expected, actual)
+
+        result = self._client.get(f'/purchases/{expected.id + 1}')
+        self.assertEquals(204, result.status_code)
+
+    
+    def test_get_by_id_returns_no_content_status(self):
+        result = self._client.get(f'/purchases/9999999')
+
+        self.assertEquals(204, result.status_code)
 
     
     def test_get_all_tags_returns_not_empty_list(self):

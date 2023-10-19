@@ -17,7 +17,7 @@ class ITransactionsRepository(Generic[T]):
     def get_all_tags(self) -> List[str]:
         raise NotImplementedError()
     
-    def get_by_id(self, id: int) -> T:
+    def get_by_id(self, id: int) -> Optional[T]:
         raise NotImplementedError()
     
     def update(self, entity: T) -> None:

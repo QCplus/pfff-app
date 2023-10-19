@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status, HTTPException
 
 from src.deps import oauth2_scheme
 from src.db.dto.NewPurchaseDto import NewPurchaseDto
@@ -65,6 +65,11 @@ def get_by_id(id: int,
               repo: IPurchasesRepository = Depends(get_purchases_repo),
               token: str = Depends(oauth2_scheme)
               ) -> Optional[PurchaseModel]:
+    purchase = repo.get_by_id(id)
+
+    if purchase is None:
+        raise HTTPException(status.HTTP_204_NO_CONTENT, f'No purchase with id {id}')
+
     return PurchaseModel.from_db(
-        repo.get_by_id(id)
+        purchase
     )

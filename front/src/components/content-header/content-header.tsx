@@ -1,16 +1,17 @@
 import React from 'react';
 import { Button, Space, Tooltip } from 'antd';
 import { DollarCircleOutlined, QrcodeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+
 import { ModalFormContext } from '../../contexts/modal-form-context/modal-form-context';
-import NewItemForm from '../forms/new-item-form/new-item-form';
 import CheckQrCodeForm from '../forms/check-qr-code-form/check-qr-code-form';
 import NewPaymentForm from '../forms/new-payment-form/new-payment-form';
+import PurchaseForm from '../forms/purchase-form/purchase-form';
 
 const ContentHeader = () => {
     const { openModal, closeModal } = React.useContext(ModalFormContext);
 
     const onAddPurchaseBtnClick = () => {
-        openModal('Add New Purchase', <NewItemForm onSuccessSubmit={closeModal} />);
+        openModal('Add New Purchase', <PurchaseForm onSuccessSubmit={closeModal} />);
     }
 
     const onScanCodeBtnClick = () => {

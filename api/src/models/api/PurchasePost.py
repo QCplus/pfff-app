@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel
 
 from src.db.dto.NewPurchaseDto import NewPurchaseDto
+from src.models.api.CamelModel import CamelModel
 
 
-class PurchasePost(BaseModel):
+class PurchasePost(CamelModel):
     price: float
     name: str
     quantity: float

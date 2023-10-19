@@ -1,38 +1,60 @@
 import React from 'react';
 import { Button, DatePicker, Form, Input, InputNumber, Space } from 'antd';
-
 import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
 import timezone from 'dayjs/plugin/timezone';
 import utc from 'dayjs/plugin/utc';
+
 import AddPurchaseRequest from '../../../api/requests/purchase/AddPurchaseRequest';
 import GetPurchasesTagsRequest from '../../../api/requests/purchase/GetPurchasesTagsRequest';
+import PurchaseModel from '../../../api/models/PurchaseModel';
 import { DATE_TIME_FORMAT } from '../../../globals';
 import TagInput from '../tag-input/tag-input';
+import { nameof } from '../../../utils/common_utils';
+import UpdatePurchaseRequest from '../../../api/requests/purchase/UpdatePurchaseRequest';
 
 dayjs.extend(timezone);
 dayjs.extend(utc);
 
-const INITIAL_VALUES = { quantity: 1, payment_time: dayjs(new Date().toLocaleString().replace(',', ''), DATE_TIME_FORMAT) };
+const INITIAL_VALUES = { quantity: 1, paymentTimeDayjs: dayjs() };
 
 const getTagsRequest = new GetPurchasesTagsRequest();
 
-export type NewItemFormProps = {
+type PurchaseFormValue = {
+    paymentTimeDayjs: Dayjs;
+} & PurchaseModel;
+
+export type PurchaseFormProps = {
+    value?: PurchaseModel;
     onSuccessSubmit: () => void;
 }
 
-const NewItemForm = (props: NewItemFormProps) => {
-    const [form] = Form.useForm();
+const PurchaseForm = (props: PurchaseFormProps) => {
+    const [form] = Form.useForm<PurchaseFormValue>();
 
-    const postForm = (formData: any) => {
-        formData.payment_time = dayjs.tz(formData.payment_time).format().split('+')[0]
+    React.useEffect(() => {
+        props.value && form.setFieldsValue({ ...props.value, paymentTimeDayjs: dayjs(props.value.paymentTime) });
+    }, [props.value, form]);
 
-        new AddPurchaseRequest()
-            .send(formData)
-            .then(r => {
-                form.resetFields();
+    const postForm = (formData: PurchaseFormValue) => {
+        const payload = { ...formData, paymentTime: dayjs.tz(formData.paymentTimeDayjs).format().split('+')[0] } as PurchaseModel;
 
-                props.onSuccessSubmit();
-            });
+        if (formData.id) {
+            new UpdatePurchaseRequest()
+                .send(payload)
+                .then(r => {
+                    props.onSuccessSubmit();
+                });
+        }
+        else {
+            new AddPurchaseRequest()
+                .send(payload)
+                .then(r => {
+                    form.resetFields();
+
+                    props.onSuccessSubmit();
+                });
+        }
     }
 
     return (
@@ -42,8 +64,15 @@ const NewItemForm = (props: NewItemFormProps) => {
             onFinish={postForm}
         >
             <Form.Item
+                hidden
+                name={nameof<PurchaseFormValue>('id')}
+            >
+                <Input />
+            </Form.Item>
+
+            <Form.Item
                 label='Item name'
-                name='name'
+                name={nameof<PurchaseFormValue>('name')}
                 rules={[{ required: true }]}
             >
                 <Input />
@@ -53,7 +82,7 @@ const NewItemForm = (props: NewItemFormProps) => {
                 <Space direction='horizontal' size='large'>
                     <Form.Item
                         label='Quantity'
-                        name='quantity'
+                        name={nameof<PurchaseFormValue>('quantity')}
                         rules={[{ required: true }]}
                         style={{ display: 'inline-block' }}
                     >
@@ -63,7 +92,7 @@ const NewItemForm = (props: NewItemFormProps) => {
 
                     <Form.Item
                         label='Payment time'
-                        name='payment_time'
+                        name={nameof<PurchaseFormValue>('paymentTimeDayjs')}
                         rules={[{ required: true }]}
                         style={{ display: 'inline-block' }}
                     >
@@ -76,7 +105,7 @@ const NewItemForm = (props: NewItemFormProps) => {
                 <Space direction='horizontal' size='large'>
                     <Form.Item
                         label='Price'
-                        name='price'
+                        name={nameof<PurchaseFormValue>('price')}
                         rules={[{ required: true }]}
                     >
                         <InputNumber style={{ width: '120px' }} />
@@ -84,7 +113,7 @@ const NewItemForm = (props: NewItemFormProps) => {
 
                     <Form.Item
                         label='Shop'
-                        name='shop'
+                        name={nameof<PurchaseFormValue>('shop')}
                     >
                         <Input />
                     </Form.Item>
@@ -93,18 +122,18 @@ const NewItemForm = (props: NewItemFormProps) => {
 
             <Form.Item
                 label='Category'
-                name='category'
+                name={nameof<PurchaseFormValue>('category')}
             >
                 <TagInput getTagsRequest={getTagsRequest} />
             </Form.Item>
 
             <Form.Item>
                 <Button type='primary' htmlType='submit'>
-                    Add Item
+                    {props.value?.id ? 'Update Purchase' : 'Add Purchase'}
                 </Button>
             </Form.Item>
         </Form>
     )
 }
 
-export default NewItemForm;
+export default PurchaseForm;

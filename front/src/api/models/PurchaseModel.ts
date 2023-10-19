@@ -1,4 +1,5 @@
-type Purchase = {
+type PurchaseModel = {
+    id: number;
     price: number;
     name: string;
     quantity: number;
@@ -7,4 +8,4 @@ type Purchase = {
     category: string;
 }
 
-export default Purchase;
+export default PurchaseModel;

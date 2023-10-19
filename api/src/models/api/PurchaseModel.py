@@ -1,12 +1,11 @@
 from datetime import datetime
-from dataclasses import dataclass
 from typing import Optional
 
 from src.models.Purchase import Purchase
+from src.models.api.CamelModel import CamelModel
 
 
-@dataclass
-class PurchaseModel:
+class PurchaseModel(CamelModel):
     id: int
     price: float
     name: str
