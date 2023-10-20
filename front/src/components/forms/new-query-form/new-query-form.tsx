@@ -83,7 +83,6 @@ const NewQueryForm = (props: NewQueryFormProps) => {
                                 placeholder='Write your code here'
                                 extensions={[sql({ upperCaseKeywords: true })]}
                             />
-                            {/* <Input.TextArea rows={4} placeholder='Write your code here' /> */}
                         </Form.Item>
 
                         <Form.Item>
