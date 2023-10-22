@@ -6,6 +6,7 @@ from src.models.AppSettings import AppSettings
 from src.repositories.abstract.IUsersRepository import IUsersRepository
 from src.repositories.app_deps import get_users_repo
 from src.services.PasswordHasher import PasswordHasher
+from src.services.PluginLoader import PluginLoader
 from src.services.RepositoriesFactory import RepositoriesFactory
 from src.services.TokenGenerator import TokenGenerator
 
@@ -15,6 +16,9 @@ def get_repos_factory():
 
 
 settings = AppSettings(os.path.join('.', 'data', 'appsettings.json'))
+plugin_loader = PluginLoader('./plugins')
+qr_code_processor = plugin_loader.load_qr_code_processor()
+cloud_sync_plugin = plugin_loader.load_cloud_sync(settings)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 password_hasher = PasswordHasher()
 token_generator = TokenGenerator(settings.secret_key, settings.token_lifetime_mins)

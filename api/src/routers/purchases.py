@@ -6,12 +6,9 @@ from src.db.dto.NewPurchaseDto import NewPurchaseDto
 from src.models.api.PurchaseModel import PurchaseModel
 from src.models.api.PurchasePost import PurchasePost
 from src.repositories.abstract.IPurchasesRepository import IPurchasesRepository
-from src.services.PluginLoader import PluginLoader
 from src.repositories.app_deps import get_purchases_repo
+from src.deps import qr_code_processor
 
-
-plugin_loader = PluginLoader('./plugins')
-qr_code_processor = plugin_loader.load_qr_code_processor()
 
 router = APIRouter(
     prefix='/purchases'
