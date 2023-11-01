@@ -6,10 +6,20 @@ import CustomQueryPanel from '../custom-query-result/custom-query-panel';
 import ExecQueryRequest from '../../api/requests/query/ExecQueryRequest';
 import useFetch from '../../hooks/useFetch';
 import CustomQueryActions from './custom-query-actions';
+import NumberPanel from '../number-panel/number-panel';
+import QueryResult from '../../api/models/QueryResult';
 
 export type CustomQueryWrapperProps = {
     queryId: number;
     title: string;
+}
+
+const getPanelComponent = (result: QueryResult) => {
+    const data = result.data;
+
+    if (data.columns.length === 1 && data.rows.length === 1)
+        return <NumberPanel value={data.rows[0][0]} />
+    return <CustomQueryPanel queryResult={data} />
 }
 
 const CustomQueryWrapper = (props: CustomQueryWrapperProps) => {
@@ -21,13 +31,13 @@ const CustomQueryWrapper = (props: CustomQueryWrapperProps) => {
     }
 
     return (
-        <Card title={queryResult?.title ?? props.title} bodyStyle={{ padding: 0, minHeight: '200px' }}
+        <Card title={queryResult?.title ?? props.title} bodyStyle={{ padding: 0 }}
             extra={<CustomQueryActions queryId={props.queryId} updateData={onNeedDataUpdate} />}
         >
             {
                 isLoading
                     ? <div style={{ textAlign: 'center', margin: '50px 0 50px 0' }}><LoadingOutlined style={{ margin: 'auto', fontSize: '5rem' }} /></div>
-                    : <CustomQueryPanel queryResult={queryResult!.data} />
+                    : getPanelComponent(queryResult!)
             }
         </Card>
     )
