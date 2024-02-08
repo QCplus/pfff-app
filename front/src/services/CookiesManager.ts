@@ -1,20 +1,26 @@
 import Cookies, { CookieGetOptions, CookieSetOptions } from "universal-cookie";
 
-export type CookieType = 'auth';
+export type CookieType = "auth";
 
 class CookiesManager {
     private _cookies: Cookies;
     private _defaultSetOptions: CookieSetOptions;
 
     constructor() {
-        this._cookies = new Cookies(document.cookie, { path: '/' });
+        this._cookies = new Cookies(document.cookie, {
+            path: "/",
+        });
+
         this._defaultSetOptions = {
-            sameSite: 'strict'
+            sameSite: "strict",
         };
     }
 
     public set(type: CookieType, value: string, options?: CookieSetOptions) {
-        this._cookies.set(type, value, { ...options, ...this._defaultSetOptions });
+        this._cookies.set(type, value, {
+            ...options,
+            ...this._defaultSetOptions,
+        });
     }
 
     public get(type: CookieType, options?: CookieGetOptions): string {
