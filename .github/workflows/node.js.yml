@@ -9,10 +9,6 @@ on:
   pull_request:
     branches: [ "master" ]
 
-defaults:
-  run:
-    working-directory: ./front
-
 jobs:
   build:
 
@@ -25,6 +21,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - run: rm -r api
+    - run: cp -a front/. . | rm -r front
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
