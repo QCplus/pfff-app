@@ -10,7 +10,7 @@ import MainPage from "./pages/MainPage";
 
 function App() {
     const [isLoading, setIsLoading] = React.useState(true);
-    const [options] = useAppSelector((state) => [state.apiOptions]);
+    const options = useAppSelector((state) => state.apiOptions);
 
     const dispatch = useAppDispatch();
 
