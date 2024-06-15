@@ -2,11 +2,11 @@ import React from "react";
 import { Button, Card, Form, Input } from "antd";
 import localeValues from "antd/locale/en_US";
 
-import { nameof } from "../utils/common_utils";
-import AddUserRequest from "../api/requests/users/AddUserRequest";
-import { useAppDispatch, useAppSelector } from "../hooks/redux";
-import LoginRequest from "../api/requests/LoginRequest";
-import { setToken } from "../redux/reducers/authentication";
+import { nameof } from "../../../utils/common_utils";
+import AddUserRequest from "../../../api/requests/users/AddUserRequest";
+import { useAppDispatch } from "../../../hooks/redux";
+import LoginRequest from "../../../api/requests/LoginRequest";
+import { setToken } from "../../../redux/reducers/authentication";
 
 type FormValues = {
     username: string;
@@ -14,9 +14,12 @@ type FormValues = {
     passwordRepeat: string;
 };
 
-const RegisterPage = () => {
+export type LoginRegisterFormProps = {
+    isRegister?: boolean;
+};
+
+const LoginRegisterForm = (props: LoginRegisterFormProps) => {
     const [form] = Form.useForm<FormValues>();
-    const options = useAppSelector((state) => state.apiOptions);
     const dispatch = useAppDispatch();
 
     const postForm = (formData: FormValues) => {
@@ -25,10 +28,10 @@ const RegisterPage = () => {
             password: formData.password,
         };
 
-        if (options.firstRun) {
+        if (props.isRegister) {
             new AddUserRequest()
                 .send(creds)
-                .then((r) => window.location.reload());
+                .then(() => window.location.reload());
         } else {
             new LoginRequest().send(creds).then((r) =>
                 dispatch(
@@ -45,7 +48,7 @@ const RegisterPage = () => {
     return (
         <div style={{ height: "100vh", background: "#adc6ff" }}>
             <Card
-                title={options.firstRun ? "Create a new user" : "Login"}
+                title={props.isRegister ? "Create a new user" : "Login"}
                 style={{
                     width: 400,
                     position: "absolute",
@@ -77,12 +80,16 @@ const RegisterPage = () => {
                     <Form.Item
                         label="Password"
                         name={nameof<FormValues>("password")}
-                        rules={[{ required: true, min: 8 }]}
+                        rules={[
+                            props.isRegister
+                                ? { required: true, min: 8 }
+                                : { required: true },
+                        ]}
                     >
                         <Input.Password />
                     </Form.Item>
 
-                    {options.firstRun ? (
+                    {props.isRegister ? (
                         <Form.Item
                             hasFeedback
                             label="Password"
@@ -127,4 +134,4 @@ const RegisterPage = () => {
     );
 };
 
-export default RegisterPage;
+export default LoginRegisterForm;
