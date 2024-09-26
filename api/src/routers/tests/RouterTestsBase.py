@@ -1,8 +1,6 @@
+import unittest
 from fastapi import Request
 from fastapi.testclient import TestClient
-import unittest
-import random
-import string
 
 from main import app
 from src.db.orm_db import Base, get_session

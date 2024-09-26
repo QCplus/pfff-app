@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-@router.post('/')
+@router.post('')
 def add_payment(payment: Payment,
                 factory: RepositoriesFactory = Depends(get_repos_factory),
                 session: Session = Depends(get_session),

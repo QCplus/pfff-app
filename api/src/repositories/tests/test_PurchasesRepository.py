@@ -36,15 +36,15 @@ class test_PurchasesRepository(RepositoryTestsBase):
         self.repository = PurchasesRepository(self.db)
 
     def assertPurchase(self, expected: NewPurchaseDto, actual: Purchase) -> None:
-        self.assertEquals(expected.category, actual.category)
-        self.assertEquals(expected.name, actual.name)
-        self.assertEquals(expected.payment_time, actual.payment_time)
-        self.assertEquals(expected.price, actual.price)
-        self.assertEquals(expected.shop, actual.shop)
-        self.assertEquals(expected.quantity, actual.quantity)
+        self.assertEqual(expected.category, actual.category)
+        self.assertEqual(expected.name, actual.name)
+        self.assertEqual(expected.payment_time, actual.payment_time)
+        self.assertEqual(expected.price, actual.price)
+        self.assertEqual(expected.shop, actual.shop)
+        self.assertEqual(expected.quantity, actual.quantity)
 
     def assertPurchases(self, expected: List[NewPurchaseDto], actual: List[Purchase]) -> None:
-        self.assertEquals(len(expected), len(actual))
+        self.assertEqual(len(expected), len(actual))
         for i in range(len(expected)):
             self.assertPurchase(expected[i], actual[i])
 
@@ -55,10 +55,10 @@ class test_PurchasesRepository(RepositoryTestsBase):
         self.repository.add(expected_purchase1)
         self.repository.add(expected_purchase2)
 
-        items = self.repository.get_by_interval(datetime.now() - relativedelta(days=1))
+        items = self.repository.get_by_interval(
+            datetime.now() - relativedelta(days=1))
 
         self.assertPurchases([expected_purchase1, expected_purchase2], items)
-
 
     def test_add_list(self):
         items = [
@@ -117,9 +117,8 @@ class test_PurchasesRepository(RepositoryTestsBase):
         self.repository.update(expected)
         actual = self.repository.get_by_id(id)
 
-        self.assertEquals(expected, actual)
+        self.assertEqual(expected, actual)
 
-    
     def test_get_all_tags_no_empty_tags(self):
         purchase = self.new_purchase('ITEM', 100, category='CATEGORY')
         self.repository.add(purchase)
@@ -128,5 +127,5 @@ class test_PurchasesRepository(RepositoryTestsBase):
 
         tags = self.repository.get_all_tags()
 
-        self.assertEquals(1, len(tags))
-        self.assertEquals(purchase.category, tags[0])
+        self.assertEqual(1, len(tags))
+        self.assertEqual(purchase.category, tags[0])
