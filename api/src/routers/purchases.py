@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 
-@router.post('/')
+@router.post('')
 def add(item: PurchasePost,
         repo: IPurchasesRepository = Depends(get_purchases_repo),
         token: str = Depends(oauth2_scheme)
@@ -41,7 +41,7 @@ def add_from_qr_code(code: str,
         for t in data])
 
 
-@router.put('/')
+@router.put('')
 def update(purchase: PurchaseModel,
            repo: IPurchasesRepository = Depends(get_purchases_repo),
            token: str = Depends(oauth2_scheme)
@@ -65,7 +65,8 @@ def get_by_id(id: int,
     purchase = repo.get_by_id(id)
 
     if purchase is None:
-        raise HTTPException(status.HTTP_204_NO_CONTENT, f'No purchase with id {id}')
+        raise HTTPException(status.HTTP_204_NO_CONTENT,
+                            f'No purchase with id {id}')
 
     return PurchaseModel.from_db(
         purchase
