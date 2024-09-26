@@ -12,6 +12,7 @@ export type ModalFormState = {
         openOptions?: ModalFormOptions
     ) => void;
     closeModal: () => void;
+    updateModalContent: (content: React.ReactNode, title?: string) => void;
 };
 
 export const modalFormReducer = (
@@ -32,6 +33,12 @@ export const modalFormReducer = (
                 ...state,
                 isOpen: false,
                 content: state.clearOnClose ? null : state.content,
+            };
+        case ModalFormActionType.UpdateModalContent:
+            return {
+                ...state,
+                content: action.content,
+                title: action.title ?? state.title,
             };
         default:
             throw new Error(`Unknown action type: ${action.type}`);

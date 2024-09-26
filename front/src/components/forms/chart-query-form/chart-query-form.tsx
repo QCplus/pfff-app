@@ -5,27 +5,20 @@ import ReactCodeMirror from "@uiw/react-codemirror";
 import { sql } from "@codemirror/lang-sql";
 
 import CustomQuery from "../../../api/models/CustomQuery";
-import AddQueryRequest from "../../../api/requests/query/AddQueryRequest";
-import UpdateQueryRequest from "../../../api/requests/query/UpdateQueryRequest";
-import GetQueryRequest from "../../../api/requests/query/GetQueryRequest";
 
 const INITIAL_VALUES = { q: "", title: "" } as CustomQuery;
 
-export type NewQueryFormProps = {
+export type ChartQueryFormProps = {
     queryId?: number;
     onSuccessSubmit: () => void;
 };
 
-const NewQueryForm = (props: NewQueryFormProps) => {
+const ChartQueryForm = (props: ChartQueryFormProps) => {
     const [isLoading, setIsLoading] = React.useState(!!props.queryId);
     const [form] = Form.useForm<CustomQuery>();
 
     React.useEffect(() => {
         if (props.queryId) {
-            new GetQueryRequest().send(props.queryId).then((r) => {
-                form.setFieldsValue(r.data);
-                setIsLoading(false);
-            });
         } else {
             form.resetFields();
             setIsLoading(false);
@@ -33,12 +26,8 @@ const NewQueryForm = (props: NewQueryFormProps) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.queryId]);
 
-    const postForm = (formData: any) => {
-        const request = props.queryId
-            ? new UpdateQueryRequest()
-            : new AddQueryRequest();
-
-        request.send(formData as CustomQuery).then((r) => {
+    const postForm = (formData: CustomQuery) => {
+        request.send(formData).then((r) => {
             props.onSuccessSubmit();
         });
     };
@@ -79,10 +68,12 @@ const NewQueryForm = (props: NewQueryFormProps) => {
                             {props.queryId ? "Update Query" : "Add Query"}
                         </Button>
                     </Form.Item>
+
+                    <span>Query should return two columns (label, value)</span>
                 </Form>
             )}
         </>
     );
 };
 
-export default NewQueryForm;
+export default ChartQueryForm;
