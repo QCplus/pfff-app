@@ -32,19 +32,21 @@ class PurchasesRepository(IPurchasesRepository):
         self.__db.commit()
 
     def get_by_interval(self, start_date: dt.datetime, end_date: Optional[dt.datetime] = None) -> List[Purchase]:
-        q = self.__db.query(PurchaseEntity).filter(PurchaseEntity.payment_time >= start_date)
+        q = self.__db.query(PurchaseEntity).filter(
+            PurchaseEntity.payment_time >= start_date).order_by(PurchaseEntity.payment_time.desc())
         if end_date:
             q = q.filter(PurchaseEntity.payment_time <= end_date)
 
         return [Purchase.from_db(r) for r in q.all()]
 
     def get_by_id(self, id: int) -> Optional[Purchase]:
-        result = self.__db.query(PurchaseEntity).filter(PurchaseEntity.id == id).first()
+        result = self.__db.query(PurchaseEntity).filter(
+            PurchaseEntity.id == id).first()
 
         return None if result is None else Purchase.from_db(result)
 
     def get_all_tags(self) -> List[str]:
-        return [r.category for r in 
+        return [r.category for r in
                 self.__db
                 .query(PurchaseEntity)
                 .distinct()
@@ -52,10 +54,10 @@ class PurchasesRepository(IPurchasesRepository):
                 .where(PurchaseEntity.category != None)
                 .where(PurchaseEntity.category != '')
                 .all()]
-    
+
     def update(self, entity: Purchase) -> None:
         q = self.__db \
             .query(PurchaseEntity) \
             .where(PurchaseEntity.id == entity.id) \
-            .update(entity.__dict__) # type: ignore
+            .update(entity.__dict__)  # type: ignore
         self.__db.commit()
