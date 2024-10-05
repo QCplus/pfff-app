@@ -44,7 +44,7 @@ export abstract class ApiRequestBase<T = any, E = any, P = any> {
     protected responseFormat: ResponseFormat;
 
     constructor(
-        httpMethod: string,
+        httpMethod: "GET" | "POST" | "DELETE" | "PUT",
         contentType: ContentType,
         responseFormat: ResponseFormat
     ) {

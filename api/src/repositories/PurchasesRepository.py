@@ -39,6 +39,7 @@ class PurchasesRepository(IPurchasesRepository):
 
         return [Purchase.from_db(r) for r in q.all()]
 
+    # pylint: disable=fixme redefined-builtin
     def get_by_id(self, id: int) -> Optional[Purchase]:
         result = self.__db.query(PurchaseEntity).filter(
             PurchaseEntity.id == id).first()
@@ -51,6 +52,7 @@ class PurchasesRepository(IPurchasesRepository):
                 .query(PurchaseEntity)
                 .distinct()
                 .group_by(PurchaseEntity.category)
+                # pylint: disable=fixme singleton-comparison
                 .where(PurchaseEntity.category != None)
                 .where(PurchaseEntity.category != '')
                 .all()]
@@ -61,3 +63,12 @@ class PurchasesRepository(IPurchasesRepository):
             .where(PurchaseEntity.id == entity.id) \
             .update(entity.__dict__)  # type: ignore
         self.__db.commit()
+
+    # pylint: disable=fixme redefined-builtin
+    def remove(self, id: int) -> None:
+        entity = self.__db.query(PurchaseEntity).where(
+            PurchaseEntity.id == id).first()
+
+        if entity:
+            self.__db.delete(entity)
+            self.__db.commit()

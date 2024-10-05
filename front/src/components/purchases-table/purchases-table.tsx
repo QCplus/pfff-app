@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, DatePicker, Space, Table } from "antd";
+import { Button, DatePicker, Popconfirm, Space, Table } from "antd";
 import dayjs from "dayjs";
 import { ColumnsType } from "antd/es/table";
 
@@ -9,6 +9,7 @@ import useFetch from "../../hooks/useFetch";
 import GetPurchasesRequest from "../../api/requests/purchase/GetPurchasesRequest";
 import GetPurchasesFilter from "../../api/models/purchase/GetPurchasesFilter";
 import { DATE_FORMAT } from "../../globals";
+import DeletePurchaseRequest from "../../api/requests/purchase/DeletePurchaseRequest";
 
 const MODEL_COLUMNS: ColumnsType<PurchaseModel> = [
     {
@@ -52,6 +53,36 @@ const PurchasesTable = () => {
     });
     const [data, isLoading] = useFetch(REQUEST, filter);
 
+    const deletePurchase = React.useCallback((id: number) => {
+        new DeletePurchaseRequest()
+            .send(id)
+            .then(() => setFilter((v) => ({ ...v })));
+    }, []);
+
+    const columns: ColumnsType<PurchaseModel> = React.useMemo(
+        () => [
+            ...MODEL_COLUMNS,
+            {
+                title: "",
+                key: "action",
+                render: (_, record) => (
+                    <Popconfirm
+                        title="Delete the purchase"
+                        description="Are you sure to delete the purchase?"
+                        onConfirm={() => deletePurchase(record.id)}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button type="link" danger>
+                            Delete
+                        </Button>
+                    </Popconfirm>
+                ),
+            },
+        ],
+        [deletePurchase]
+    );
+
     return (
         <Space direction="vertical" style={{ display: "flex" }}>
             <Space size="middle">
@@ -83,7 +114,7 @@ const PurchasesTable = () => {
                 </Button>
             </Space>
             <Table
-                columns={MODEL_COLUMNS}
+                columns={columns}
                 dataSource={data?.rows ?? []}
                 rowKey={(row) => row.id}
                 size="middle"

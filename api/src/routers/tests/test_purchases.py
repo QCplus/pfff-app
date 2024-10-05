@@ -1,5 +1,6 @@
 from typing import List, Optional
 from datetime import datetime
+from fastapi import status
 
 from src.models.api.PurchaseModel import PurchaseModel
 from src.models.api.PurchasePost import PurchasePost
@@ -107,3 +108,12 @@ class TestPurchases(RouterTestsBase):
         self.assertEqual(1, len(actual),
                          'Length of the expected list is not equal to actual')
         self._assert_models(expected, actual[0])
+
+    def test_delete_purchase_deletes(self):
+        purchase = self._add_purchase()
+
+        self._client.delete(f'purchases/{purchase.id}')
+
+        result = self._client.get(f'purchases/{purchase.id}')
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, result.status_code)
