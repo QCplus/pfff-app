@@ -1,11 +1,11 @@
-import random
+from typing import List, Optional
 from datetime import datetime
-from typing import Optional
+from fastapi import status
 
 from src.models.api.PurchaseModel import PurchaseModel
 from src.models.api.PurchasePost import PurchasePost
 from src.routers.tests.RouterTestCase import RouterTestCase
-from src.tests_helpers.common import random_str
+from src.routers.tests.data_generators.purchases_generator import random_purchase_post
 from src.tests_helpers.purchase import random_purchase_model
 
 
@@ -13,25 +13,15 @@ class TestPurchases(RouterTestCase):
     def __init__(self, methodName='runTest') -> None:
         super().__init__(methodName=methodName, base_url='')
 
-    def _random_purchase_post(self, category: Optional[str] = None) -> PurchasePost:
-        return PurchasePost(price=random.randrange(1, 999),
-                            name=random_str(12),
-                            quantity=random.randrange(1, 10),
-                            payment_time=datetime.now().isoformat(),
-                            shop=f'SHOP {random_str(10)}',
-                            category=f'CATEGORY {random_str(
-                                4)}' if category is None else category
-                            )
-
     def _add_purchase(self, category: Optional[str] = None) -> PurchaseModel:
-        purchase = self._random_purchase_post(category=category)
+        purchase = random_purchase_post(category=category)
         result = self._client.post('/purchases', json=purchase.as_dict())
 
         result = self._client.get(f'/purchases/{result.content.decode()}')
 
         return PurchaseModel(**result.json())
 
-    def assert_models(self, expected: PurchaseModel, actual: dict):
+    def _assert_models(self, expected: PurchaseModel, actual: dict):
         self.assertEqual(expected.id, actual['id'])
         self.assertEqual(expected.price, actual['price'])
         self.assertEqual(expected.name, actual['name'])
@@ -39,6 +29,9 @@ class TestPurchases(RouterTestCase):
         self.assertEqual(expected.payment_time, actual['paymentTime'])
         self.assertEqual(expected.shop, actual['shop'])
         self.assertEqual(expected.category, actual['category'])
+
+    def _get_filter_params(self, start: datetime, end: datetime) -> List:
+        return [('start', start.isoformat()), ('end', end.isoformat())]
 
     def test_add_inserts_successfully(self):
         expected = PurchasePost(price=100,
@@ -72,7 +65,7 @@ class TestPurchases(RouterTestCase):
 
         actual = result.json()
         self.assertIsNotNone(actual)
-        self.assert_models(expected, actual)
+        self._assert_models(expected, actual)
 
         result = self._client.get(f'/purchases/{expected.id + 1}')
         self.assertEqual(204, result.status_code)
@@ -91,3 +84,39 @@ class TestPurchases(RouterTestCase):
         tags = result.json()
         self.assertEqual(1, len(tags))
         self.assertEqual(purchase.category, tags[0])
+
+    def test_get_by_interval_returns_ordered_by_desc(self):
+        expected = [self._add_purchase(), self._add_purchase(),
+                    self._add_purchase()][::-1]
+
+        actual = self._client.get('purchases', params=self._get_filter_params(
+            datetime.min, datetime.max)).json()['rows']
+
+        self.assertEqual(len(expected), len(actual),
+                         'Length of the expected list is not equal to actual')
+
+        for (e, a) in zip(expected, actual):
+            self._assert_models(e, a)
+
+    def test_get_by_interval_not_returns_old_rows(self):
+        expected = self._add_purchase()
+
+        old_purchase = random_purchase_post()
+        old_purchase.payment_time = datetime.min.isoformat()
+        self._client.post('/purchases', json=old_purchase.as_dict())
+
+        actual = self._client.get('purchases', params=self._get_filter_params(
+            datetime.fromisoformat(expected.payment_time), datetime.max)).json()['rows']
+
+        self.assertEqual(1, len(actual),
+                         'Length of the expected list is not equal to actual')
+        self._assert_models(expected, actual[0])
+
+    def test_delete_purchase_deletes(self):
+        purchase = self._add_purchase()
+
+        self._client.delete(f'purchases/{purchase.id}')
+
+        result = self._client.get(f'purchases/{purchase.id}')
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, result.status_code)

@@ -52,5 +52,8 @@
         "titleBar.inactiveBackground": "#cf851799",
         "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "#cf8517"
+    "peacock.color": "#cf8517",
+    "pylint.args": [
+        "--disable=C0103,C0114,C0115,C0116"
+    ]
 }
