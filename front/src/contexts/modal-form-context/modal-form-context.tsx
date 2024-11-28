@@ -9,6 +9,8 @@ const INITIAL_STATE = {
     title: "",
     openModal: (title: string, content: React.ReactNode): void => undefined,
     closeModal: (): void => undefined,
+    updateModalContent: (content: React.ReactNode, title?: string): void =>
+        undefined,
     clearOnClose: false,
 } as ModalFormState;
 
@@ -36,12 +38,21 @@ export const ModalFormProvider = (props: { children: React.ReactNode }) => {
         });
     };
 
+    const handleUpdateContent = (content: React.ReactNode, title?: string) => {
+        dispatch({
+            type: ModalFormActionType.UpdateModalContent,
+            content: content,
+            title: title,
+        });
+    };
+
     const value = {
         isOpen: state.isOpen,
         content: state.content,
         title: state.title,
         openModal: handleOpenModal,
         closeModal: handleCloseModal,
+        updateModalContent: handleUpdateContent,
     } as ModalFormState;
 
     return (

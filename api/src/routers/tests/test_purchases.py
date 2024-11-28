@@ -4,12 +4,15 @@ from fastapi import status
 
 from src.models.api.PurchaseModel import PurchaseModel
 from src.models.api.PurchasePost import PurchasePost
-from src.routers.tests.RouterTestsBase import RouterTestsBase
+from src.routers.tests.RouterTestCase import RouterTestCase
 from src.routers.tests.data_generators.purchases_generator import random_purchase_post
 from src.tests_helpers.purchase import random_purchase_model
 
 
-class TestPurchases(RouterTestsBase):
+class TestPurchases(RouterTestCase):
+    def __init__(self, methodName='runTest') -> None:
+        super().__init__(methodName=methodName, base_url='')
+
     def _add_purchase(self, category: Optional[str] = None) -> PurchaseModel:
         purchase = random_purchase_post(category=category)
         result = self._client.post('/purchases', json=purchase.as_dict())
@@ -87,7 +90,7 @@ class TestPurchases(RouterTestsBase):
                     self._add_purchase()][::-1]
 
         actual = self._client.get('purchases', params=self._get_filter_params(
-            datetime.min, datetime.max)).json()
+            datetime.min, datetime.max)).json()['rows']
 
         self.assertEqual(len(expected), len(actual),
                          'Length of the expected list is not equal to actual')
@@ -103,7 +106,7 @@ class TestPurchases(RouterTestsBase):
         self._client.post('/purchases', json=old_purchase.as_dict())
 
         actual = self._client.get('purchases', params=self._get_filter_params(
-            datetime.fromisoformat(expected.payment_time), datetime.max)).json()
+            datetime.fromisoformat(expected.payment_time), datetime.max)).json()['rows']
 
         self.assertEqual(1, len(actual),
                          'Length of the expected list is not equal to actual')

@@ -1,20 +1,26 @@
-import CustomQuery from "../../models/CustomQuery";
+import NewCustomQuery from "../../models/queries/NewCustomQuery";
 import ApiRequestBase, { ContentType, HttpResponse } from "../ApiRequestBase";
 
-export default class AddQueryRequest extends ApiRequestBase<number, unknown, CustomQuery> {
+export default class AddQueryRequest extends ApiRequestBase<
+    number,
+    unknown,
+    NewCustomQuery
+> {
     constructor() {
-        super('POST', ContentType.Json, 'json');
+        super("POST", ContentType.Json, "json");
     }
 
-    public getPath(query: CustomQuery): string {
-        return '/queries';
+    public getPath(query: NewCustomQuery): string {
+        return "/queries";
     }
 
-    public getRequestBody(query: CustomQuery): unknown {
+    public getRequestBody(query: NewCustomQuery): unknown {
         return query;
     }
 
-    public async send(query: CustomQuery): Promise<HttpResponse<number, any>> {
+    public async send(
+        query: NewCustomQuery
+    ): Promise<HttpResponse<number, any>> {
         return super.send(query);
     }
 }

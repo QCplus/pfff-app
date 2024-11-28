@@ -3,6 +3,7 @@ import ModalFormOptions from "./modal-form-options";
 export enum ModalFormActionType {
     OpenModal = "openModal",
     CloseModal = "closeModal",
+    UpdateModalContent = "updateModalContent",
 }
 
 export type ModalFormAction = {

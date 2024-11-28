@@ -9,3 +9,4 @@ class QueryEntity(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str]
     q: Mapped[str]
+    view_type: Mapped[int] = mapped_column(server_default='1')
