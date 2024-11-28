@@ -13,31 +13,30 @@ class QueriesRepository(IQueriesRepository):
     def __init__(self, db: Session) -> None:
         self.__db = db
 
-    def add(self, title: str, q: str) -> int:
-        entity = QueryEntity(title=title, q=q)
-
-        self.__db.add(entity)
+    def add(self, query: QueryEntity) -> int:
+        self.__db.add(query)
         self.__db.commit()
 
-        return entity.id
-    
+        return query.id
+
     def update(self, query: CustomQueryModel) -> None:
         self.__db.query(QueryEntity).where(QueryEntity.id == query.id).update({
             'title': query.title,
             'q': query.q
         })
         self.__db.commit()
-    
+
     def get(self, id: int) -> Optional[CustomQueryModel]:
-        entity = self.__db.query(QueryEntity).where(QueryEntity.id == id).one_or_none()
+        entity = self.__db.query(QueryEntity).where(
+            QueryEntity.id == id).one_or_none()
 
         return CustomQueryModel.from_entity(entity) if entity else None
-    
+
     def get_all_queries(self) -> List[CustomQueryModel]:
         return CustomQueryModel.from_entities(
             self.__db.query(QueryEntity).all()
         )
-    
+
     def delete(self, id: int) -> None:
         q = self.__db.query(QueryEntity).where(QueryEntity.id == id).one()
         self.__db.delete(q)
@@ -58,5 +57,6 @@ class QueriesRepository(IQueriesRepository):
             id=query.id,
             title=query.title,
             q=query.q,
-            data=data
+            data=data,
+            view_type=query.view_type
         )

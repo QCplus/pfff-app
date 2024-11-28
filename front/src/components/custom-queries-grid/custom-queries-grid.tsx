@@ -6,16 +6,19 @@ import CustomQueryWrapper from "../custom-query-wrapper/custom-query-wrapper";
 import GetAllQueriesRequest from "../../api/requests/query/GetAllQueriesRequest";
 import useFetch from "../../hooks/useFetch";
 import { ModalFormContext } from "../../contexts/modal-form-context/modal-form-context";
-import CustomQueryTypesPanel from "../custom-query/custom-query-types-panel/custom-query-types-panel";
+import NewQueryForm from "../forms/new-query-form/new-query-form";
 
 const REQUEST = new GetAllQueriesRequest();
 
 const CustomQueriesGrid = () => {
     const [queries] = useFetch(REQUEST, undefined);
-    const { openModal } = React.useContext(ModalFormContext);
+    const { openModal, closeModal } = React.useContext(ModalFormContext);
 
     const onAddQueryBtnClick = () => {
-        openModal("Choose query type", <CustomQueryTypesPanel />);
+        openModal(
+            "Choose query type",
+            <NewQueryForm onSuccessSubmit={closeModal} />
+        );
     };
 
     return (

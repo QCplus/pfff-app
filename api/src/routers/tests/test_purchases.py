@@ -4,12 +4,15 @@ from typing import Optional
 
 from src.models.api.PurchaseModel import PurchaseModel
 from src.models.api.PurchasePost import PurchasePost
-from src.routers.tests.RouterTestsBase import RouterTestsBase
+from src.routers.tests.RouterTestCase import RouterTestCase
 from src.tests_helpers.common import random_str
 from src.tests_helpers.purchase import random_purchase_model
 
 
-class TestPurchases(RouterTestsBase):
+class TestPurchases(RouterTestCase):
+    def __init__(self, methodName='runTest') -> None:
+        super().__init__(methodName=methodName, base_url='')
+
     def _random_purchase_post(self, category: Optional[str] = None) -> PurchasePost:
         return PurchasePost(price=random.randrange(1, 999),
                             name=random_str(12),
